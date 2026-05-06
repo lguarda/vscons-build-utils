@@ -59,11 +59,7 @@ def roslynator(target, source, env):
     print("Running:", " ".join(cmd))
     subprocess.run(cmd, env=proc_env)
 
-def get_scons_vs_option():
-    vars = Variables('.sconscache.py')
-
-# TODO: make some order in this file by useing scons-site directory
-
+def get_scons_vs_option(vars):
     vars.Add(
         PathVariable(
             'VINTAGE_STORY',
@@ -90,7 +86,7 @@ def get_scons_vs_option():
             ignorecase=0,  # case-sensitive
         ),
     )
-    return vars
+
 
 def setup_cake_build(env, target_dir, project_name, release_dir):
     cake_target_csproj = env.Substfile(
@@ -110,6 +106,7 @@ def setup_modinfo(env, target_dir, server, client, mod_id, mod_name, desc):
         target=f"{target_dir}/modinfo.json",
         source=f"{SCRIPT_DIR}/../template/modinfo.json.in",
         SUBST_DICT={
+            "@AUTHOR@": "lguarda",
             "@GIT_VERSION@": env["GIT_VERSION"],
             "@WITH_SERVER@": 'true' if server else 'false',
             "@WITH_CLIENT@": 'true' if client else 'false',

@@ -1,0 +1,15 @@
+{
+    "type": "code",
+    "modid": "@MOD_ID@",
+    "name": "@MOD_NAME@",
+    "requiredOnClient": @WITH_CLIENT@,
+    "requiredOnServer": @WITH_SERVER@,
+    "authors": [
+        "@AUTHOR@"
+    ],
+    "description": "@DESCRIPTION@",
+    "version": "@GIT_VERSION@",
+    "dependencies": {
+        "game": ""
+    }
+}

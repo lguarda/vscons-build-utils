@@ -21,7 +21,7 @@ def vs_version(env):
         "--version"
     ]
     print("Running:", {" ".join(cmd)})
-    output = subprocess.check_output(cmd, text=True)
+    output = subprocess.check_output(cmd, text=True).rstrip()
     print(f"Output:{output}")
     return output
 

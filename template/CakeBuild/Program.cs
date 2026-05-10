@@ -46,11 +46,12 @@ public sealed class ValidateJsonTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)
     {
-        if (context.SkipJsonValidation)
-        {
-            return;
-        }
-        var jsonFiles = context.GetFiles($"../{BuildContext.ProjectName}/assets/**/*.json");
+        if (context.SkipJsonValidation) return;
+
+        var assetsDir = $"../{BuildContext.ProjectName}/assets";
+        if (!context.DirectoryExists(assetsDir)) return;
+
+        var jsonFiles = context.GetFiles($"{assetsDir}/**/*.json");
         foreach (var file in jsonFiles)
         {
             try
@@ -97,7 +98,12 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         context.CleanDirectory("../RELEASE_DIR");
         context.EnsureDirectoryExists($"../RELEASE_DIR/{context.Name}");
         context.CopyFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*", $"../RELEASE_DIR/{context.Name}");
-        context.CopyDirectory($"../{BuildContext.ProjectName}/assets", $"../RELEASE_DIR/{context.Name}/assets");
+        //context.CopyDirectory($"../{BuildContext.ProjectName}/assets", $"../RELEASE_DIR/{context.Name}/assets");
+        var assetsDir = $"../{BuildContext.ProjectName}/assets";
+        if (context.DirectoryExists(assetsDir))
+        {
+            context.CopyDirectory(assetsDir, $"../RELEASE_DIR/{context.Name}/assets");
+        }
         context.CopyFile($"../{BuildContext.ProjectName}/modinfo.json", $"../RELEASE_DIR/{context.Name}/modinfo.json");
         if (context.FileExists($"../{BuildContext.ProjectName}/modicon.png"))
         {

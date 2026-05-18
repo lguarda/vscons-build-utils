@@ -2,6 +2,9 @@ import subprocess
 import os
 from SCons.Variables import Variables
 from SCons.Variables import BoolVariable, EnumVariable, PathVariable
+from SCons.Script import Alias, AlwaysBuild
+import shutil
+
 
 home = os.environ.get("HOME")
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -115,3 +118,25 @@ def setup_modinfo(env, target_dir, server, client, mod_id, mod_name, desc):
             "@DESCRIPTION@": desc,
             }
 )
+
+def make_copy_target(name, src, dst):
+    src = os.path.expanduser(src)
+    dst = os.path.expanduser(dst)
+
+    def action(target, source, env):
+        if not os.path.exists(src):
+            raise RuntimeError(f"Source does not exist: {src}")
+
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
+
+        shutil.copytree(src, dst)
+
+        print(f"[{name}]")
+        print(f"  {src}")
+        print(f"    -> {dst}")
+
+    target = Alias(name, [], action)
+    AlwaysBuild(target)
+
+    return target

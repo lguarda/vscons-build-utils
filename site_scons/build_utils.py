@@ -51,6 +51,17 @@ def cake_package(csproj, vs_path, dotnet_vers):
     ]
     subprocess.run(cmd, env=proc_env)
 
+def dotnet_fmt(csproj, vs_path, dotnet_vers):
+    proc_env = os.environ.copy()
+    proc_env["VINTAGE_STORY"] = vs_path
+    proc_env["DOTNET_VERS"] = dotnet_vers
+    cmd = [
+        "dotnet",
+        "format",
+        csproj,
+    ]
+    subprocess.run(cmd, env=proc_env)
+
 def roslynator(target, source, env):
     proc_env = os.environ.copy()
     proc_env["VINTAGE_STORY"] = str(env["VINTAGE_STORY"])

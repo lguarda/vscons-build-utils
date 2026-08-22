@@ -39,7 +39,7 @@ def vs_run(env):
     subprocess.run(cmd)
 
 
-def dotnet_run(csproj, vs_path, dotnet_vers):
+def cake_package(csproj, vs_path, dotnet_vers):
     proc_env = os.environ.copy()
     proc_env["VINTAGE_STORY"] = vs_path
     proc_env["DOTNET_VERS"] = dotnet_vers

@@ -110,35 +110,41 @@ def validate_json_assets(mod_dir):
             raise RuntimeError(f"Validation failed for JSON file: {f}\n{e}") from e
 
 # This is taken from Program.cs cake build system
-def build_mod_release(mod_dir, mod_id, version, env, release_dir="Release"):
+def build_mod_release(src, mod_id, version, env, release_dir="Release"):
     """Clean, publish, validate assets and zip a mod into release_dir/<id>_<version>.zip."""
-    csproj = f"{mod_dir}/{mod_dir}.csproj"
+    csproj = f"{mod_id}.csproj"
     configuration = _configuration(env)
 
     _run_cmd(["dotnet", "clean", csproj, "-c", configuration], env=_vs_env(env))
-    validate_json_assets(mod_dir)
+    validate_json_assets(src)
+    print("-1 ===================")
     _run_cmd(["dotnet", "publish", csproj, "-c", configuration], env=_vs_env(env))
+    print("0 ===================")
 
-    publish_dir = Path(mod_dir) / "bin" / configuration / "Mods" / "mod" / "publish"
+    publish_dir = Path("./bin") / configuration / "publish"
     stage = Path(release_dir) / mod_id
     if stage.exists():
         shutil.rmtree(stage)
     stage.mkdir(parents=True)
-
+    print("1 ===================")
     for item in publish_dir.glob("*"):
         dest = stage / item.name
         shutil.copytree(item, dest, dirs_exist_ok=True) if item.is_dir() else shutil.copy2(item, dest)
 
-    assets_dir = Path(mod_dir) / "assets"
+    print("2 ===================")
+    assets_dir = Path(src) / "assets"
     if assets_dir.is_dir():
         shutil.copytree(assets_dir, stage / "assets", dirs_exist_ok=True)
 
-    shutil.copy2(Path(mod_dir) / "modinfo.json", stage / "modinfo.json")
+    print("3 ===================")
+    shutil.copy2(Path("./bin/modinfo.json"), stage / "modinfo.json")
 
-    modicon = Path(mod_dir) / "modicon.png"
+    print("4 ===================")
+    modicon = Path("./logo.png")
     if modicon.is_file():
         shutil.copy2(modicon, stage / "modicon.png")
 
+    print("5 ===================")
     zip_path = Path(release_dir) / f"{mod_id}_{version}.zip"
     if zip_path.exists():
         zip_path.unlink()
@@ -146,6 +152,7 @@ def build_mod_release(mod_dir, mod_id, version, env, release_dir="Release"):
         for f in stage.rglob("*"):
             if f.is_file():
                 zf.write(f, f.relative_to(stage))
+    print("6 ===================")
     return zip_path
 
 
